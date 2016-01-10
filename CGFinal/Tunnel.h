@@ -9,6 +9,8 @@
 #include <list>
 #include "TunnelSlice.h"
 #include "Path.h"
+#include "Obstacle.h"
+
 class Tunnel
 {
 public:
@@ -18,6 +20,7 @@ public:
 	Point getDirection();
 private:
 	std::list<TunnelSlice> tunnel;
+	//std::list<Obstacle*> obstacles;
 	Path path;
 	void updateTunnel();
 };

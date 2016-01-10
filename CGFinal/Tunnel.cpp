@@ -5,7 +5,10 @@
 */
 #include "Tunnel.h"
 #include "constant.h"
+#include <GL\glut.h>
 #include <iostream>
+#include "ObstacleType.h"
+#include "Cube.h"
 
 using namespace std;
 
@@ -42,14 +45,8 @@ void Tunnel::updateTunnel()
 	//move
 	Point speed = tunnel.front().getSpeed();
 	float speedValue = speed.length();
-	//for (int i = 0; i < 3;i++)
-		tunnel.pop_front();
-
-
-
-	float dx = -tunnel.front().getFrontCenter().x;
-	float dy = -tunnel.front().getFrontCenter().y;
-	float dz = -tunnel.front().getFrontCenter().z;
+	
+	tunnel.pop_front();
 
 	//new a tunnel
 	while(tunnel.size() < SLICENUMS)
@@ -59,7 +56,6 @@ void Tunnel::updateTunnel()
 		if (sliceIndex + 1 == SLICENUMS)
 		{
 			path.RandomANewPath();
-			std::cout << "fuck";
 			sliceIndex = -1;
 		}
 
@@ -75,23 +71,37 @@ void Tunnel::updateTunnel()
 		tunnel.push_back(newSlice);
 	}
 
+	float dx = -tunnel.front().getFrontCenter().x;
+	float dy = -tunnel.front().getFrontCenter().y;
+	float dz = -tunnel.front().getFrontCenter().z;
 	for (list<TunnelSlice>::iterator it = tunnel.begin(); it != tunnel.end(); it++)
-		it->move(dx, dy, dz);
+		it->move(0, 0, dz);
 }
 
 void Tunnel::drawATunnel()
 {
+	glPushMatrix();
+	
+	float dx = -tunnel.front().getFrontCenter().x;
+	float dy = -tunnel.front().getFrontCenter().y;
+	float dz = -tunnel.front().getFrontCenter().z;
+	glTranslatef(dx, dy, dz);
 	for (list<TunnelSlice>::iterator it = tunnel.begin(); it != tunnel.end(); it++)
 		it->drawASlice();
+
+	//Obstacle* obs = randomAnObstacle(Point(0, 0, -50), Point(0, 0, -51));
+	//obs->draw();
+
+	glPopMatrix();
 }
 
 Point Tunnel::getDirection()
 {
 	updateTunnel();
 
-	Point p1 = tunnel.front().getFrontCenter();
-	Point p2 = tunnel.front().getBackCenter();
-	return p2 - p1;
+	//Point p1 = tunnel.front().getFrontCenter();
+	//Point p2 = tunnel.front().getBackCenter();
+	//return p2 - p1;
 
 	Point p = tunnel.front().getSpeed();
 	return p;

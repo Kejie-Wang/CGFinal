@@ -9,7 +9,7 @@
 
 #include "constant.h"
 #include "Point.h"
-
+#include "Obstacle.h"
 
 class TunnelSlice
 {
@@ -19,6 +19,8 @@ private:
 	float thick;
 	float color[FACENUM][3];
 	int sliceIndex;
+	Obstacle* obs = nullptr;
+	void randomAnObstacle(const Point& sliceCenter1, const Point& sliceCenter2);
 public:
 	TunnelSlice();
 	TunnelSlice(Point center1, Point center2, float radius = SLICERADIUS, float thick = SLICETHICKNESS);

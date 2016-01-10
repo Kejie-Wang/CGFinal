@@ -63,7 +63,7 @@ void Path::RandomANewPath()
 		float dx, dy;
 		dx = 2 * randf(RADIUSDIFFSPAN) - RADIUSDIFFSPAN;
 		dy = 2 * randf(RADIUSDIFFSPAN) - RADIUSDIFFSPAN;
-		//dx = 0; dy = 0;
+		dx = 0; dy = 0;
 		float x = ctrPoints.back().x, y = ctrPoints.back().y, z = ctrPoints.back().z;
 
 		ctrPoints.push_back(Point(x + dx, y + dy, z - CTRPOINTSDDST));

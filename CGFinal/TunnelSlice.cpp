@@ -6,6 +6,8 @@
 
 #include "TunnelSlice.h"
 #include "constant.h"
+#include "ObstacleType.h"
+#include "Cube.h"
 #include <GL/glut.h>
 #include <cstring>
 
@@ -74,8 +76,8 @@ void TunnelSlice::drawASlice()
 		float x1, x2, y1, y2, z1, z2;
 		float x3, x4, y3, y4, z3, z4;
 
-		x1 = 10.0*cos(toRadian(angle)); y1 = 10.0*sin(toRadian(angle));
-		x2 = 10.0*cos(toRadian(angle + ANGLESPAN)); y2 = 10.0*sin(toRadian(angle + ANGLESPAN));
+		x1 = SLICERADIUS*cos(toRadian(angle)); y1 = SLICERADIUS*sin(toRadian(angle));
+		x2 = SLICERADIUS*cos(toRadian(angle + ANGLESPAN)); y2 = SLICERADIUS*sin(toRadian(angle + ANGLESPAN));
 		z1 = 0.0f; z2 = 0.0f;
 
 		x3 = x1 + center2.x - center1.x; x4 = x2 + center2.x - center1.x;
@@ -83,17 +85,6 @@ void TunnelSlice::drawASlice()
 		z3 = z1 + center2.z - center1.z; z4 = z2 + center2.z - center1.z;
 		
 		glColor3f(0.0f, 0.0f, 0.0f);
-
-		glLineWidth(2.0);
-		/*glBegin(GL_LINES);
-		glVertex3f(x1, y1, z1);
-		glVertex3f(x3, y3, z3);
-		glVertex3f(x2, y2, z2);
-		glVertex3f(x4, y4, z4);
-		//glVertex3f((x1 + x3) / 2, (y1 + y3) / 2, (z1 + z2) / 2);
-		//glVertex3f((x2 + x4) / 2, (y2 + y4) / 2, (z1 + z2) / 2);
-		glEnd();
-		*/
 
 		//draw the tunnel
 		glColor3fv(color[i]);
@@ -109,6 +100,15 @@ void TunnelSlice::drawASlice()
 		glEnd();
 
 		angle += 30;
+	}
+
+	if (sliceIndex == 100 && obs == nullptr)
+		randomAnObstacle(center1, center2);
+	
+	if (obs != nullptr)
+	{
+		obs->setCenter(center1);
+		obs->draw();
 	}
 
 	glPopMatrix();
@@ -158,4 +158,30 @@ void TunnelSlice::setSpeed(Point s)
 Point TunnelSlice::getSpeed()
 {
 	return speed;
+}
+
+void TunnelSlice::randomAnObstacle(const Point& sliceCenter1, const Point& sliceCenter2)
+{
+	Point dir = sliceCenter2 - sliceCenter1;
+	ObstacleType type = (ObstacleType)(0);
+	int face = 9;
+
+	switch (type)
+	{
+	case CUBE:
+	{
+		Point p(0, 0, -1);
+		Point normal = crossProduct(p, dir);
+		Point center = sliceCenter1;
+		float angle = 0;
+		if (normal.x != 0 || normal.y != 0 || normal.z != 0)
+			float angle = intersecAngle(p, dir);
+		//center.z -= PATHWIDTH / 2;
+		//center.y = center.y - PATHHEIGHT / 2 + PATHWIDTH / 2;
+		obs = new Cube(center, normal, angle, PATHWIDTH);
+		break;
+	}
+	default:
+		break;
+	}
 }

@@ -13,7 +13,6 @@ static const double PI = 2 * asin(1);
 /*
 *view constant
 */
-
 static float eyex = 0.0f;
 static float eyey = 0.0f;
 static const float eyez = 0.0f;
@@ -32,12 +31,14 @@ static const int ANGLESPAN = 360 / FACENUM;
 
 static const float SLICERADIUS = 10.0f;
 static const float SLICETHICKNESS = 2.0f;
+static const float PATHWIDTH = 2 * SLICERADIUS * sin(PI / 12);
+static const float PATHHEIGHT = 2 * SLICERADIUS * cos(PI / 12);
 
 /*
 *tunnel constant
 */
 static const float TUNNELLENGTH = 600.0f;
-static const int SLICENUMS = 300;
+static const int SLICENUMS = 300.0;//TUNNELLENGTH / SLICETHICKNESS;
 
 /*
 *Bezier path constant
