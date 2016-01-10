@@ -3,10 +3,13 @@
 #include <iostream>
 #include "Tunnel.h"
 #include "constant.h"
+#include "lighting.h"
+
 
 using namespace std;
 
 Tunnel tunnel;
+Lighting light;
 
 void display()
 {
@@ -23,7 +26,7 @@ void display()
 	gluLookAt(eyex, eyey, 0, dir.x, dir.y, dir.z, 0, 1, 0);	//set the position and direction of the  eye point
 	
 	tunnel.drawATunnel();
-	
+
 	glutSwapBuffers();
 
 }
@@ -38,12 +41,13 @@ void Reshape(int w, int h)
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(60, 1, 1, 300);
+	gluPerspective(60, 1.0 * w / h, 1, 600);
 }
 
 void myIdle()
 {
-	display();
+	//light.changeLighting();
+	glutPostRedisplay();
 }
 
 int main(int argc, char *argv[])
@@ -67,6 +71,9 @@ int main(int argc, char *argv[])
 	glutInitWindowPosition(50, 50);
 	glutInitWindowSize(WINWIDTH, WINHEIGHT);
 	glutCreateWindow("Tunnel Test");
+
+	//light.initLighting(0, 0, 0);
+
 	glutDisplayFunc(&display);
 	glutIdleFunc(myIdle);
 	glutReshapeFunc(Reshape);

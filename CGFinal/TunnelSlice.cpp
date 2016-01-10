@@ -10,6 +10,7 @@
 #include "Cube.h"
 #include <GL/glut.h>
 #include <cstring>
+#include "lighting.h"
 
 TunnelSlice::TunnelSlice()
 {
@@ -49,8 +50,8 @@ void TunnelSlice::drawASlice()
 		float x11, x21, y11, y21, z11, z21;
 		float x31, x41, y31, y41, z31, z41;
 
-		x11 = 9.8*cos(toRadian(angle)); y11 = 9.8*sin(toRadian(angle));
-		x21 = 9.8*cos(toRadian(angle + ANGLESPAN)); y21 = 9.8*sin(toRadian(angle + ANGLESPAN));
+		x11 = 9.7*cos(toRadian(angle)); y11 = 9.7*sin(toRadian(angle));
+		x21 = 9.7*cos(toRadian(angle + ANGLESPAN)); y21 = 9.7*sin(toRadian(angle + ANGLESPAN));
 		z11 = 0.0f; z21 = 0.0f;
 
 		x31 = x11 + center2.x - center1.x; x41 = x21 + center2.x - center1.x;
@@ -65,7 +66,7 @@ void TunnelSlice::drawASlice()
 		glVertex3f(x31, y31, z31);
 		glVertex3f(x21, y21, z21);
 		glVertex3f(x41, y41, z41);
-		if (sliceIndex % 8 == 0)
+		if (sliceIndex % 4 == 0)
 		{
 			glVertex3f((x11 + x31) / 2, (y11 + y31) / 2, (z11 + z21) / 2);
 			glVertex3f((x21 + x41) / 2, (y21 + y41) / 2, (z11 + z21) / 2);
@@ -84,34 +85,72 @@ void TunnelSlice::drawASlice()
 		y3 = y1 + center2.y - center1.y; y4 = y2 + center2.y - center1.y;
 		z3 = z1 + center2.z - center1.z; z4 = z2 + center2.z - center1.z;
 		
-		glColor3f(0.0f, 0.0f, 0.0f);
+		//glColor3f(0.0f, 0.0f, 0.0f);
+
+		Point p1 = Point(x1, y1, z1);
+		Point p2 = Point(x2, y2, z2);
+		Point p3 = Point(x3, y3, z3);
+		Point p4 = Point(x4, y4, z4);
+
+		Point normal = crossProduct(Point(x3, y3, z3) - Point(x1, y1, z1), Point(x2, y2, z2) - Point(x1, y1, z1));
+
+		//Point normal(0, 1, 0);
 
 		//draw the tunnel
 		glColor3fv(color[i]);
+		glNormal3fv(normal.toArray());
 
 		glBegin(GL_TRIANGLES);
-		glVertex3f(x1, y1, z1);
+		
+		/*glVertex3f(x1, y1, z1);
 		glVertex3f(x2, y2, z2);
 		glVertex3f(x3, y3, z3);
 
 		glVertex3f(x2, y2, z2);
-		glVertex3f(x3, y3, z3);
 		glVertex3f(x4, y4, z4);
+		glVertex3f(x3, y3, z3); */
+
+		/*Lighting::splitAndDraw(Point(x1, y1, z1).toArray(),
+			Point(x2, y2, z2).toArray(),
+			Point(x3, y3, z3).toArray(),
+			Point(x4, y4, z4).toArray());*/
+
+		for (int i = 0; i < SLICESPLITNUM; i++)
+		{
+			Point p11 = 1.0 * i / SLICESPLITNUM*p1 + 1.0 *(SLICESPLITNUM - i) / SLICESPLITNUM *p2;
+			Point p31 = 1.0 *(i + 1) / SLICESPLITNUM*p1 + 1.0 *(SLICESPLITNUM - i - 1) / SLICESPLITNUM *p2;
+			Point p21 = 1.0 *i / SLICESPLITNUM*p3 + 1.0 *(SLICESPLITNUM - i) / SLICESPLITNUM *p4;
+			Point p41 = 1.0 *(i + 1) / SLICESPLITNUM*p3 + 1.0 *(SLICESPLITNUM - i - 1) / SLICESPLITNUM *p4;
+
+			glVertex3fv(p11.toArray());
+			glVertex3fv(p21.toArray());
+			glVertex3fv(p31.toArray());
+
+			glVertex3fv(p21.toArray());
+			glVertex3fv(p41.toArray());
+			glVertex3fv(p31.toArray());
+		}
+
 		glEnd();
 
 		angle += 30;
 	}
 
 	if (sliceIndex == 100 && obs == nullptr)
+	{
 		randomAnObstacle(center1, center2);
+	}
 	
+	glPopMatrix();
+
 	if (obs != nullptr)
 	{
-		obs->setCenter(center1);
+		Point center = center1;
+		center.z -= PATHWIDTH / 2;
+		center.y = center.y - PATHHEIGHT / 2 + PATHWIDTH / 2 + 0.1;
+		obs->setCenter(center);
 		obs->draw();
 	}
-
-	glPopMatrix();
 }
 
 void TunnelSlice::move(float dx, float dy, float dz)
@@ -176,8 +215,8 @@ void TunnelSlice::randomAnObstacle(const Point& sliceCenter1, const Point& slice
 		float angle = 0;
 		if (normal.x != 0 || normal.y != 0 || normal.z != 0)
 			float angle = intersecAngle(p, dir);
-		//center.z -= PATHWIDTH / 2;
-		//center.y = center.y - PATHHEIGHT / 2 + PATHWIDTH / 2;
+		center.z -= PATHWIDTH / 2;
+		center.y = center.y - PATHHEIGHT / 2 + PATHWIDTH / 2;
 		obs = new Cube(center, normal, angle, PATHWIDTH);
 		break;
 	}

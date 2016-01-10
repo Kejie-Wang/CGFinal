@@ -21,6 +21,9 @@ void Cube::draw()
 
 	glTranslatef(center.x, center.y, center.z);
 	glRotatef(angle, normal.x, normal.y, normal.z);
+
+	//glScalef(1, 1, 1.0 / length);
+
 	glColor3f(1.0, 0.0, 0.0);
 	glutSolidCube(length);
 

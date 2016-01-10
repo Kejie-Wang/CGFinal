@@ -69,7 +69,7 @@ void Lighting::initLighting(GLfloat positionX, GLfloat positionY, GLfloat positi
 	glLightf(GL_LIGHT7, GL_SPOT_CUTOFF, spotCutoff);
 
 	//衰变
-	GLfloat linearAttenuation = 0.01;
+	GLfloat linearAttenuation = 0.1;
 	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, linearAttenuation);
 	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, linearAttenuation);
 	glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, linearAttenuation);
@@ -80,7 +80,7 @@ void Lighting::initLighting(GLfloat positionX, GLfloat positionY, GLfloat positi
 	glLightf(GL_LIGHT7, GL_LINEAR_ATTENUATION, linearAttenuation);
 
 	//点光源GL_LIGHT0
-	GLfloat ambientAndDiffuseLight0[] = { 0.5, 0.5, 0.5, 1 };
+	GLfloat ambientAndDiffuseLight0[] = { 1, 0.5, 0.5, 1 };
 	GLfloat specularLight0[] = { 0, 0, 0, 1 };
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientAndDiffuseLight0);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, ambientAndDiffuseLight0);
@@ -91,11 +91,13 @@ void Lighting::initLighting(GLfloat positionX, GLfloat positionY, GLfloat positi
 	GLfloat diffuseLight1[] = { 0.5, 0, 0, 1 };
 	GLfloat specularLight1[] = { 0.5, 0, 0, 1 };
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuseLight1);
+//	glLightfv(GL_LIGHT1, GL_AMBIENT, diffuseLight1);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, specularLight1);
 	glEnable(GL_LIGHT1);
 
 	GLfloat diffuseLight2[] = { 0, 0.5, 0, 1 };
 	GLfloat specularLight2[] = { 0, 0.5, 0, 1 };
+//	glLightfv(GL_LIGHT1, GL_AMBIENT, diffuseLight2);
 	glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuseLight2);
 	glLightfv(GL_LIGHT2, GL_SPECULAR, specularLight2);
 	glEnable(GL_LIGHT2);
