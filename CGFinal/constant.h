@@ -31,18 +31,18 @@ static const int FACENUM = 12;
 static const int ANGLESPAN = 360 / FACENUM;
 
 static const float SLICERADIUS = 10.0f;
-static const float SLICETHICKNESS = 1.0f;
+static const float SLICETHICKNESS = 2.0f;
 
 /*
 *tunnel constant
 */
-static const float TUNNELLENGTH = 300.0f;
+static const float TUNNELLENGTH = 600.0f;
 static const int SLICENUMS = 300;
 
 /*
 *Bezier path constant
 */
-static const float CTRPOINTSDDST = 100.0f;
-static const float RADIUSDIFFSPAN = 30.0f;
+static const float CTRPOINTSDDST = 50.0f;
+static const float RADIUSDIFFSPAN = 20.0f;
 
 #endif

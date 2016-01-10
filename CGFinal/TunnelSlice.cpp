@@ -44,6 +44,33 @@ void TunnelSlice::drawASlice()
 	double angle = -ANGLESPAN / 2;
 	for (int i = 0; i < FACENUM; i++)
 	{
+		float x11, x21, y11, y21, z11, z21;
+		float x31, x41, y31, y41, z31, z41;
+
+		x11 = 9.8*cos(toRadian(angle)); y11 = 9.8*sin(toRadian(angle));
+		x21 = 9.8*cos(toRadian(angle + ANGLESPAN)); y21 = 9.8*sin(toRadian(angle + ANGLESPAN));
+		z11 = 0.0f; z21 = 0.0f;
+
+		x31 = x11 + center2.x - center1.x; x41 = x21 + center2.x - center1.x;
+		y31 = y11 + center2.y - center1.y; y41 = y21 + center2.y - center1.y;
+		z31 = z11 + center2.z - center1.z; z41 = z21 + center2.z - center1.z;
+
+		glColor3f(0.0f, 0.0f, 0.0f);
+
+		glLineWidth(2.0);
+		glBegin(GL_LINES);
+		glVertex3f(x11, y11, z11);
+		glVertex3f(x31, y31, z31);
+		glVertex3f(x21, y21, z21);
+		glVertex3f(x41, y41, z41);
+		if (sliceIndex % 8 == 0)
+		{
+			glVertex3f((x11 + x31) / 2, (y11 + y31) / 2, (z11 + z21) / 2);
+			glVertex3f((x21 + x41) / 2, (y21 + y41) / 2, (z11 + z21) / 2);
+		}
+		glEnd();
+		
+		
 		float x1, x2, y1, y2, z1, z2;
 		float x3, x4, y3, y4, z3, z4;
 
@@ -57,14 +84,16 @@ void TunnelSlice::drawASlice()
 		
 		glColor3f(0.0f, 0.0f, 0.0f);
 
-		glBegin(GL_LINES);
+		glLineWidth(2.0);
+		/*glBegin(GL_LINES);
 		glVertex3f(x1, y1, z1);
 		glVertex3f(x3, y3, z3);
 		glVertex3f(x2, y2, z2);
 		glVertex3f(x4, y4, z4);
 		//glVertex3f((x1 + x3) / 2, (y1 + y3) / 2, (z1 + z2) / 2);
-		//glVertex3f((x2 + x4)(/ 2, (y2 + y4) / 2, (z1 + z2) / 2);
+		//glVertex3f((x2 + x4) / 2, (y2 + y4) / 2, (z1 + z2) / 2);
 		glEnd();
+		*/
 
 		//draw the tunnel
 		glColor3fv(color[i]);
@@ -119,4 +148,14 @@ int TunnelSlice::getSliceIndex()
 void TunnelSlice::setSliceIndex(int index)
 {
 	sliceIndex = index;
+}
+
+void TunnelSlice::setSpeed(Point s)
+{
+	this->speed = s;
+}
+
+Point TunnelSlice::getSpeed()
+{
+	return speed;
 }
