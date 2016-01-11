@@ -9,8 +9,11 @@
 #include <iostream>
 #include "ObstacleType.h"
 #include "Cube.h"
+#include <ctime>
 
 using namespace std;
+
+#define randint(x) rand()%x
 
 Tunnel::Tunnel() 
 	: path(0, -TUNNELLENGTH)
@@ -20,6 +23,8 @@ Tunnel::Tunnel()
 	slice.setSliceIndex(0);
 	slice.setSpeed(path.getFstDer(0));
 	tunnel.push_back(slice);
+	srand(time(0));
+	threshold = DIFFICULTY + randint(10);
 
 	while (tunnel.size() < SLICENUMS)
 	{
@@ -32,6 +37,14 @@ Tunnel::Tunnel()
 		TunnelSlice newSlice(newCenter1, newCenter2);
 		newSlice.setSliceIndex(sliceIndex + 1);
 		newSlice.setSpeed(path.getFstDer(zCoord));
+		pastObsDst += SLICETHICKNESS;
+		if (pastObsDst >= threshold)
+		{
+			pastObsDst = 0;
+			srand(time(0));
+			threshold = DIFFICULTY + randint(10);
+			newSlice.setIsWithObstacle(true);
+		}
 		tunnel.push_back(newSlice);
 	}
 }
@@ -46,6 +59,7 @@ void Tunnel::updateTunnel()
 	Point speed = tunnel.front().getSpeed();
 	float speedValue = speed.length();
 	
+	collisionDetection(tunnel.front());
 	tunnel.pop_front();
 
 	//new a tunnel
@@ -68,6 +82,14 @@ void Tunnel::updateTunnel()
 		TunnelSlice newSlice(newCenter1, newCenter2);
 		newSlice.setSliceIndex((sliceIndex + 1) % SLICENUMS);
 		newSlice.setSpeed(path.getFstDer(zCoord));
+		pastObsDst += SLICETHICKNESS;
+		if (pastObsDst >= threshold)	//new a obstacle
+		{
+			pastObsDst = 0;
+			srand(time(0));
+			threshold = DIFFICULTY + randint(10);
+			newSlice.setIsWithObstacle(true);
+		}
 		tunnel.push_back(newSlice);
 	}
 
@@ -81,7 +103,24 @@ void Tunnel::updateTunnel()
 void Tunnel::drawATunnel()
 {
 	glPushMatrix();
-	
+
+	for (list<TunnelSlice>::iterator it = tunnel.begin(); it != tunnel.end(); it++)
+	{
+		if (it->getIsWithObstacle() && it->getFrontCenter().z >= -200)
+		{
+			int face = it->getFace();
+			float* color = it->getObstacleColor();
+			if (color == nullptr)
+				continue;
+			for (list<TunnelSlice>::iterator itmp = tunnel.begin(); itmp != it; itmp++)
+			{
+				itmp->setFaceColor(face, color);
+			}
+		}
+	}
+
+	glRotatef(angle, 0, 0, 1);
+
 	float dx = -tunnel.front().getFrontCenter().x;
 	float dy = -tunnel.front().getFrontCenter().y;
 	float dz = -tunnel.front().getFrontCenter().z;
@@ -105,4 +144,19 @@ Point Tunnel::getDirection()
 
 	Point p = tunnel.front().getSpeed();
 	return p;
+}
+
+void Tunnel::setAngle(float angle)
+{
+	this->angle = angle;
+}
+
+bool Tunnel::collisionDetection(TunnelSlice slice)
+{
+	if (!slice.getIsWithObstacle())
+		return false;
+	if (((int)angle / -30 + 9) % 12 == slice.getFace())
+	{
+		exit(1);
+	}
 }

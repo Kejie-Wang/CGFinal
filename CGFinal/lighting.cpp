@@ -3,6 +3,9 @@
 
 void Lighting::initLighting(GLfloat positionX, GLfloat positionY, GLfloat positionZ)
 {
+	for (int i = 0; i < 8; i++)
+		isOccupied[0] = false;
+
 	//光源位置
 	GLfloat position[] = { positionX, positionY, positionY, 1 };
 	glLightfv(GL_LIGHT0, GL_POSITION, position);
@@ -15,9 +18,9 @@ void Lighting::initLighting(GLfloat positionX, GLfloat positionY, GLfloat positi
 	glLightfv(GL_LIGHT7, GL_POSITION, position);
 
 	//聚光灯方向
-	GLfloat directionX = -100;
+	GLfloat directionX = 0;
 	GLfloat directionY = 0;
-	GLfloat directionZ = 0;
+	GLfloat directionZ = -100;
 
 	spotDirection1[0] = directionX;
 	spotDirection1[1] = directionY;
@@ -49,7 +52,7 @@ void Lighting::initLighting(GLfloat positionX, GLfloat positionY, GLfloat positi
 	glLightfv(GL_LIGHT7, GL_SPOT_DIRECTION, spotDirection7);
 
 	//聚光程度
-	GLfloat spotExponent = 100;
+	GLfloat spotExponent = 0;
 	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, spotExponent);
 	glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, spotExponent);
 	glLightf(GL_LIGHT3, GL_SPOT_EXPONENT, spotExponent);
@@ -59,7 +62,7 @@ void Lighting::initLighting(GLfloat positionX, GLfloat positionY, GLfloat positi
 	glLightf(GL_LIGHT7, GL_SPOT_EXPONENT, spotExponent);
 
 	//聚光灯角度
-	GLfloat spotCutoff = 10;
+	GLfloat spotCutoff = 6;
 	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, spotCutoff);
 	glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, spotCutoff);
 	glLightf(GL_LIGHT3, GL_SPOT_CUTOFF, spotCutoff);
@@ -69,7 +72,7 @@ void Lighting::initLighting(GLfloat positionX, GLfloat positionY, GLfloat positi
 	glLightf(GL_LIGHT7, GL_SPOT_CUTOFF, spotCutoff);
 
 	//衰变
-	GLfloat linearAttenuation = 0.1;
+	GLfloat linearAttenuation = 0.0001;
 	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, linearAttenuation);
 	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, linearAttenuation);
 	glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, linearAttenuation);
@@ -78,9 +81,19 @@ void Lighting::initLighting(GLfloat positionX, GLfloat positionY, GLfloat positi
 	glLightf(GL_LIGHT5, GL_LINEAR_ATTENUATION, linearAttenuation);
 	glLightf(GL_LIGHT6, GL_LINEAR_ATTENUATION, linearAttenuation);
 	glLightf(GL_LIGHT7, GL_LINEAR_ATTENUATION, linearAttenuation);
+	//GLfloat quadraticAttenuation = 0.00001;
+	//glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, linearAttenuation);
+	//glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, linearAttenuation);
+	//glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, linearAttenuation);
+	//glLightf(GL_LIGHT3, GL_QUADRATIC_ATTENUATION, linearAttenuation);
+	//glLightf(GL_LIGHT4, GL_QUADRATIC_ATTENUATION, linearAttenuation);
+	//glLightf(GL_LIGHT5, GL_QUADRATIC_ATTENUATION, linearAttenuation);
+	//glLightf(GL_LIGHT6, GL_QUADRATIC_ATTENUATION, linearAttenuation);
+	//glLightf(GL_LIGHT7, GL_QUADRATIC_ATTENUATION, linearAttenuation);
+
 
 	//点光源GL_LIGHT0
-	GLfloat ambientAndDiffuseLight0[] = { 1, 0.5, 0.5, 1 };
+	GLfloat ambientAndDiffuseLight0[] = { 0.15, 0.15, 0.15, 1 };
 	GLfloat specularLight0[] = { 0, 0, 0, 1 };
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientAndDiffuseLight0);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, ambientAndDiffuseLight0);
@@ -88,117 +101,243 @@ void Lighting::initLighting(GLfloat positionX, GLfloat positionY, GLfloat positi
 	glEnable(GL_LIGHT0);
 
 	//聚光灯
-	GLfloat diffuseLight1[] = { 0.5, 0, 0, 1 };
-	GLfloat specularLight1[] = { 0.5, 0, 0, 1 };
+	GLfloat diffuseLight1[] = { 0.4, 0.6, 0.86, 1 };
+	GLfloat specularLight1[] = { 0.4, 0.6, 0.8, 1 };
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuseLight1);
-//	glLightfv(GL_LIGHT1, GL_AMBIENT, diffuseLight1);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, specularLight1);
 	glEnable(GL_LIGHT1);
 
-	GLfloat diffuseLight2[] = { 0, 0.5, 0, 1 };
-	GLfloat specularLight2[] = { 0, 0.5, 0, 1 };
-//	glLightfv(GL_LIGHT1, GL_AMBIENT, diffuseLight2);
+	GLfloat diffuseLight2[] = { 0, 1, 0, 1 };
+	GLfloat specularLight2[] = { 0, 1, 0, 1 };
 	glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuseLight2);
 	glLightfv(GL_LIGHT2, GL_SPECULAR, specularLight2);
-	glEnable(GL_LIGHT2);
+//	glEnable(GL_LIGHT2);
 
-	GLfloat diffuseLight3[] = { 0, 0, 0.5, 1 };
-	GLfloat specularLight3[] = { 0, 0, 0.5, 1 };
+	GLfloat diffuseLight3[] = { 0.7, 0.3, 1, 1 };
+	GLfloat specularLight3[] = { 0.7, 0.3, 1, 1 };
 	glLightfv(GL_LIGHT3, GL_DIFFUSE, diffuseLight3);
 	glLightfv(GL_LIGHT3, GL_SPECULAR, specularLight3);
 	glEnable(GL_LIGHT3);
 
-	GLfloat diffuseLight4[] = { 0.5, 0.5, 0, 1 };
-	GLfloat specularLight4[] = { 0.5, 0.5, 0, 1 };
+	GLfloat diffuseLight4[] = { 1, 1, 0, 1 };
+	GLfloat specularLight4[] = { 1, 1, 0, 1 };
 	glLightfv(GL_LIGHT4, GL_DIFFUSE, diffuseLight4);
+	glLightfv(GL_LIGHT4, GL_AMBIENT, diffuseLight4);
 	glLightfv(GL_LIGHT4, GL_SPECULAR, specularLight4);
-	glEnable(GL_LIGHT4);
+//	glEnable(GL_LIGHT4);
 
-	GLfloat diffuseLight5[] = { 0.5, 0, 0.5, 1 };
-	GLfloat specularLight5[] = { 0.5, 0, 0.5, 1 };
+	GLfloat diffuseLight5[] = { 0.5, 0, 1, 1 };
+	GLfloat specularLight5[] = { 0.5, 0, 1, 1 };
+	glLightfv(GL_LIGHT5, GL_AMBIENT, diffuseLight5);
 	glLightfv(GL_LIGHT5, GL_DIFFUSE, diffuseLight5);
 	glLightfv(GL_LIGHT5, GL_SPECULAR, specularLight5);
-	glEnable(GL_LIGHT5);
+//	glEnable(GL_LIGHT5);
 
-	GLfloat diffuseLight6[] = { 0, 0.5, 0.5, 1 };
-	GLfloat specularLight6[] = { 0, 0.5, 0.5, 1 };
+	GLfloat diffuseLight6[] = { 0.2, 1, 0.5, 1 };
+	GLfloat specularLight6[] = { 0.2, 1, 0.5, 1 };
 	glLightfv(GL_LIGHT6, GL_DIFFUSE, diffuseLight6);
 	glLightfv(GL_LIGHT6, GL_SPECULAR, specularLight6);
 	glEnable(GL_LIGHT6);
 
-	GLfloat diffuseLight7[] = { 0.3, 0.4, 0.8, 1 };
-	GLfloat specularLight7[] = { 0.3, 0.4, 0.8, 1 };
+	GLfloat diffuseLight7[] = { 1, 0.4, 0.8, 1 };
+	GLfloat specularLight7[] = { 1, 0.4, 0.8, 1 };
 	glLightfv(GL_LIGHT7, GL_DIFFUSE, diffuseLight7);
 	glLightfv(GL_LIGHT7, GL_SPECULAR, specularLight7);
-	glEnable(GL_LIGHT7);
+//	glEnable(GL_LIGHT7);
 
 	//材质
-	GLfloat ambientMaterial[] = { 0.4, 0.4, 0.4, 1 };
+	GLfloat ambientMaterial[] = { 1, 1, 1, 1 };
 	GLfloat specularMaterial[] = { 1, 1, 1, 1 };
-	glMaterialfv(GL_FRONT, GL_AMBIENT, ambientMaterial);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, ambientMaterial);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, specularMaterial);
-	glMateriali(GL_FRONT, GL_SHININESS, 1);
+//	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambientMaterial);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, ambientMaterial);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specularMaterial);
+	glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 1);
 
 	glEnable(GL_LIGHTING);
 }
 
+int Lighting::updateLight(int index, GLfloat* direction)
+{
+	GLfloat position[] = { 0, 0, 0, 1 };
+
+	if (index == 0)
+	{
+		for (int i = 1; i < 8; i++)
+		{
+			if (isOccupied[i] == false)
+			{
+				index = i;
+				isOccupied[i] = true;
+				switch (index)
+				{
+				case 1:
+					glEnable(GL_LIGHT1);
+					break;
+				case 2:
+					glEnable(GL_LIGHT2);
+					break;
+				case 3:
+					glEnable(GL_LIGHT3);
+					break;
+				case 4:
+					glEnable(GL_LIGHT4);
+					break;
+				case 5:
+					glEnable(GL_LIGHT5);
+					break;
+				case 6:
+					glEnable(GL_LIGHT6);
+					break;
+				case 7:
+					glEnable(GL_LIGHT7);
+					break;
+				}
+				break;
+			}
+		}
+	}
+
+	switch (index)
+	{
+	case 1:
+		spotDirection1[0] = direction[0];
+		spotDirection1[1] = direction[1];
+		spotDirection1[2] = direction[2];
+		glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spotDirection1);
+	//	glLightfv(GL_LIGHT1, GL_POSITION, position);
+		break;
+	case 2:
+		spotDirection2[0] = direction[0];
+		spotDirection2[1] = direction[1];
+		spotDirection2[2] = direction[2];
+		glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, spotDirection2);
+	//	glLightfv(GL_LIGHT2, GL_POSITION, position);
+		break;
+	case 3:
+		spotDirection3[0] = direction[0];
+		spotDirection3[1] = direction[1];
+		spotDirection3[2] = direction[2];
+		glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, spotDirection3);
+	//	glLightfv(GL_LIGHT3, GL_POSITION, position);
+		break;
+	case 4:
+		spotDirection4[0] = direction[0];
+		spotDirection4[1] = direction[1];
+		spotDirection4[2] = direction[2];
+		glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, spotDirection4);
+	//	glLightfv(GL_LIGHT4, GL_POSITION, position);
+		break;
+	case 5:
+		spotDirection5[0] = direction[0];
+		spotDirection5[1] = direction[1];
+		spotDirection5[2] = direction[2];
+		glLightfv(GL_LIGHT5, GL_SPOT_DIRECTION, spotDirection5);
+	//	glLightfv(GL_LIGHT5, GL_POSITION, position);
+		break;
+	case 6:
+		spotDirection6[0] = direction[0];
+		spotDirection6[1] = direction[1];
+		spotDirection6[2] = direction[2];
+		glLightfv(GL_LIGHT6, GL_SPOT_DIRECTION, spotDirection6);
+	//	glLightfv(GL_LIGHT6, GL_POSITION, position);
+		break;
+	case 7:
+		spotDirection7[0] = direction[0];
+		spotDirection7[1] = direction[1];
+		spotDirection7[2] = direction[2];
+		glLightfv(GL_LIGHT7, GL_SPOT_DIRECTION, spotDirection7);
+	//	glLightfv(GL_LIGHT7, GL_POSITION, position);
+		break;
+	}
+	return index;
+}
+
+void Lighting::deleteLight(int index)
+{
+	isOccupied[index] = false;
+
+	switch (index)
+	{
+	case 1:
+		glDisable(GL_LIGHT1);
+		break;
+	case 2:
+		glDisable(GL_LIGHT2);
+		break;
+	case 3:
+		glDisable(GL_LIGHT3);
+		break;
+	case 4:
+		glDisable(GL_LIGHT4);
+		break;
+	case 5:
+		glDisable(GL_LIGHT5);
+		break;
+	case 6:
+		glDisable(GL_LIGHT6);
+		break;
+	case 7:
+		glDisable(GL_LIGHT7);
+		break;
+	}
+}
+
 void Lighting::changeLighting()
 {
-	GLfloat rate = 1;
-	GLfloat yMax = 100;
-	GLfloat yMin = -100;
-	GLfloat zMax = 100;
-	GLfloat zMin = -100;
+	GLfloat rate = 1.5;
+	GLfloat xMax = 14;
+	GLfloat xMin = -14;
+	GLfloat yMax = 14;
+	GLfloat yMin = -10;
 
+	spotDirection1[0] += spot1SpeedX*rate;
 	spotDirection1[1] += spot1SpeedY*rate;
-	spotDirection1[2] += spot1SpeedZ*rate;
+	if (spotDirection1[0] > xMax || spotDirection1[0] < xMin)
+		spot1SpeedX = -spot1SpeedX;
 	if (spotDirection1[1] > yMax || spotDirection1[1] < yMin)
 		spot1SpeedY = -spot1SpeedY;
-	if (spotDirection1[2] > zMax || spotDirection1[2] < zMin)
-		spot1SpeedZ = -spot1SpeedZ;
 
+	spotDirection2[0] += spot2SpeedX*rate;
 	spotDirection2[1] += spot2SpeedY*rate;
-	spotDirection2[2] += spot2SpeedZ*rate;
+	if (spotDirection2[0] > xMax || spotDirection2[0] < xMin)
+		spot2SpeedX = -spot2SpeedX;
 	if (spotDirection2[1] > yMax || spotDirection2[1] < yMin)
 		spot2SpeedY = -spot2SpeedY;
-	if (spotDirection2[2] > zMax || spotDirection2[2] < zMin)
-		spot2SpeedZ = -spot2SpeedZ;
 
+	spotDirection3[0] += spot3SpeedX*rate;
 	spotDirection3[1] += spot3SpeedY*rate;
-	spotDirection3[2] += spot3SpeedZ*rate;
+	if (spotDirection3[0] > xMax || spotDirection3[0] < xMin)
+		spot3SpeedX = -spot3SpeedX;
 	if (spotDirection3[1] > yMax || spotDirection3[1] < yMin)
 		spot3SpeedY = -spot3SpeedY;
-	if (spotDirection3[2] > zMax || spotDirection3[2] < zMin)
-		spot3SpeedZ = -spot3SpeedZ;
 
+	spotDirection4[0] += spot4SpeedX*rate;
 	spotDirection4[1] += spot4SpeedY*rate;
-	spotDirection4[2] += spot4SpeedZ*rate;
+	if (spotDirection4[0] > xMax || spotDirection4[0] < xMin)
+		spot4SpeedX = -spot4SpeedX;
 	if (spotDirection4[1] > yMax || spotDirection4[1] < yMin)
 		spot4SpeedY = -spot4SpeedY;
-	if (spotDirection4[2] > zMax || spotDirection4[2] < zMin)
-		spot4SpeedZ = -spot4SpeedZ;
 
+	spotDirection5[0] += spot5SpeedX*rate;
 	spotDirection5[1] += spot5SpeedY*rate;
-	spotDirection5[2] += spot5SpeedZ*rate;
+	if (spotDirection5[0] > xMax || spotDirection5[0] < xMin)
+		spot5SpeedX = -spot5SpeedX;
 	if (spotDirection5[1] > yMax || spotDirection5[1] < yMin)
 		spot5SpeedY = -spot5SpeedY;
-	if (spotDirection5[2] > zMax || spotDirection5[2] < zMin)
-		spot5SpeedZ = -spot5SpeedZ;
 
+	spotDirection6[0] += spot6SpeedX*rate;
 	spotDirection6[1] += spot6SpeedY*rate;
-	spotDirection6[2] += spot6SpeedZ*rate;
+	if (spotDirection6[0] > xMax || spotDirection6[0] < xMin)
+		spot6SpeedX = -spot6SpeedX;
 	if (spotDirection6[1] > yMax || spotDirection6[1] < yMin)
 		spot6SpeedY = -spot6SpeedY;
-	if (spotDirection6[2] > zMax || spotDirection6[2] < zMin)
-		spot6SpeedZ = -spot6SpeedZ;
 
+	spotDirection7[0] += spot7SpeedX*rate;
 	spotDirection7[1] += spot7SpeedY*rate;
-	spotDirection7[2] += spot7SpeedZ*rate;
+	if (spotDirection7[0] > xMax || spotDirection7[0] < xMin)
+		spot7SpeedX = -spot7SpeedX;
 	if (spotDirection7[1] > yMax || spotDirection7[1] < yMin)
 		spot7SpeedY = -spot7SpeedY;
-	if (spotDirection7[2] > zMax || spotDirection7[2] < zMin)
-		spot7SpeedZ = -spot7SpeedZ;
 
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spotDirection1);
 	glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, spotDirection2);
@@ -212,7 +351,7 @@ void Lighting::changeLighting()
 void Lighting::splitAndDraw(GLfloat* p1, GLfloat* p2, GLfloat* p3, GLfloat* p4)
 {
 
-	int resolution = 2;
+	int resolution = 1;
 	GLdouble length1 = sqrt((p1[0] - p2[0]) * (p1[0] - p2[0])
 		+ (p1[1] - p2[1]) * (p1[1] - p2[1])
 		+ (p1[2] - p2[2]) * (p1[2] - p2[2]));

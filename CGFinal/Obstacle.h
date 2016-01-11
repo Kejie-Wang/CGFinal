@@ -13,11 +13,12 @@ public:
 	virtual ~Obstacle();
 	virtual void draw() = 0;
 	void setCenter(Point center);
-
+	void setColor(float color[]);
 protected:
 	Point normal;
 	float angle;
 	Point center;	//position center
+	float color[3];
 	//Point front, up, left;	//direction vector
 	//float xAngle, yAngle, zAngle;
 };

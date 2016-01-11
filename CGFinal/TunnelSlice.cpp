@@ -11,6 +11,8 @@
 #include <GL/glut.h>
 #include <cstring>
 #include "lighting.h"
+#include <ctime>
+#include <cstdlib>
 
 TunnelSlice::TunnelSlice()
 {
@@ -20,17 +22,22 @@ TunnelSlice::~TunnelSlice()
 {
 }
 
-TunnelSlice::TunnelSlice(Point center1, Point center2, float radius, float thick)
+TunnelSlice::TunnelSlice(Point center1, Point center2, bool isWithObstacle)
 {
 	this->center1 = center1;
 	this->center2 = center2;
 	this->thick = thick;
+	this->isWithObstacle = false;
+	this->ligthIndex = 0;
 	for (int i = 0; i < FACENUM; i++)
 	{
-		color[i][0] = 1.0f;
-		color[i][1] = 1.0f;
-		color[i][2] = 1.0f;
+		color[i][0] = 0.1f;
+		color[i][1] = 0.1f;
+		color[i][2] = 0.1f;
 	}
+
+	for (int i = 0; i < FACENUM; i++)
+		colorSet[i] = false;
 }
 
 double TunnelSlice::toRadian(double angle)
@@ -42,8 +49,8 @@ void TunnelSlice::drawASlice()
 {
 	glPushMatrix();
 
-	glTranslated(center1.x,center1.y, center1.z);
-	
+	glTranslated(center1.x, center1.y, center1.z);
+
 	double angle = -ANGLESPAN / 2;
 	for (int i = 0; i < FACENUM; i++)
 	{
@@ -59,6 +66,8 @@ void TunnelSlice::drawASlice()
 		z31 = z11 + center2.z - center1.z; z41 = z21 + center2.z - center1.z;
 
 		glColor3f(0.0f, 0.0f, 0.0f);
+		GLfloat black[] = { 0, 0, 0, 1 };
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, black);
 
 		glLineWidth(2.0);
 		glBegin(GL_LINES);
@@ -72,8 +81,8 @@ void TunnelSlice::drawASlice()
 			glVertex3f((x21 + x41) / 2, (y21 + y41) / 2, (z11 + z21) / 2);
 		}
 		glEnd();
-		
-		
+
+
 		float x1, x2, y1, y2, z1, z2;
 		float x3, x4, y3, y4, z3, z4;
 
@@ -84,7 +93,7 @@ void TunnelSlice::drawASlice()
 		x3 = x1 + center2.x - center1.x; x4 = x2 + center2.x - center1.x;
 		y3 = y1 + center2.y - center1.y; y4 = y2 + center2.y - center1.y;
 		z3 = z1 + center2.z - center1.z; z4 = z2 + center2.z - center1.z;
-		
+
 		//glColor3f(0.0f, 0.0f, 0.0f);
 
 		Point p1 = Point(x1, y1, z1);
@@ -92,16 +101,21 @@ void TunnelSlice::drawASlice()
 		Point p3 = Point(x3, y3, z3);
 		Point p4 = Point(x4, y4, z4);
 
-		Point normal = crossProduct(Point(x3, y3, z3) - Point(x1, y1, z1), Point(x2, y2, z2) - Point(x1, y1, z1));
-
+		Point normal = -1 * crossProduct(p3 - p1, p2 - p1);
 		//Point normal(0, 1, 0);
 
 		//draw the tunnel
 		glColor3fv(color[i]);
-		glNormal3fv(normal.toArray());
+
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, color[i]);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, color[i]);///////////////////////////////////
+
+		float array[3];
+		normal.toArray(array);
+		glNormal3fv(array);
 
 		glBegin(GL_TRIANGLES);
-		
+
 		/*glVertex3f(x1, y1, z1);
 		glVertex3f(x2, y2, z2);
 		glVertex3f(x3, y3, z3);
@@ -110,11 +124,6 @@ void TunnelSlice::drawASlice()
 		glVertex3f(x4, y4, z4);
 		glVertex3f(x3, y3, z3); */
 
-		/*Lighting::splitAndDraw(Point(x1, y1, z1).toArray(),
-			Point(x2, y2, z2).toArray(),
-			Point(x3, y3, z3).toArray(),
-			Point(x4, y4, z4).toArray());*/
-
 		for (int i = 0; i < SLICESPLITNUM; i++)
 		{
 			Point p11 = 1.0 * i / SLICESPLITNUM*p1 + 1.0 *(SLICESPLITNUM - i) / SLICESPLITNUM *p2;
@@ -122,13 +131,15 @@ void TunnelSlice::drawASlice()
 			Point p21 = 1.0 *i / SLICESPLITNUM*p3 + 1.0 *(SLICESPLITNUM - i) / SLICESPLITNUM *p4;
 			Point p41 = 1.0 *(i + 1) / SLICESPLITNUM*p3 + 1.0 *(SLICESPLITNUM - i - 1) / SLICESPLITNUM *p4;
 
-			glVertex3fv(p11.toArray());
-			glVertex3fv(p21.toArray());
-			glVertex3fv(p31.toArray());
+			float array[3];
+			p11.toArray(array);
+			glVertex3fv(p11.toArray(array));
+			glVertex3fv(p21.toArray(array));
+			glVertex3fv(p31.toArray(array));
 
-			glVertex3fv(p21.toArray());
-			glVertex3fv(p41.toArray());
-			glVertex3fv(p31.toArray());
+			glVertex3fv(p21.toArray(array));
+			glVertex3fv(p41.toArray(array));
+			glVertex3fv(p31.toArray(array));
 		}
 
 		glEnd();
@@ -136,21 +147,33 @@ void TunnelSlice::drawASlice()
 		angle += 30;
 	}
 
-	if (sliceIndex == 100 && obs == nullptr)
+	if (isWithObstacle && obs == nullptr)
 	{
 		randomAnObstacle(center1, center2);
+		face = rand() % FACENUM;
 	}
-	
-	glPopMatrix();
 
+		
 	if (obs != nullptr)
 	{
-		Point center = center1;
+		glPushMatrix();
+		srand(time(0));
+		
+		//glRotatef((face + 3) % 12 * 30, center1.x - center2.x, center1.y - center2.y, center1.z - center2.z);
+		glRotatef((face + 3) % 12 * 30, 0, 0, 1);
+		Point center(0, 0, 0);
 		center.z -= PATHWIDTH / 2;
 		center.y = center.y - PATHHEIGHT / 2 + PATHWIDTH / 2 + 0.1;
+		float array[3];	
+	
 		obs->setCenter(center);
 		obs->draw();
+	//	if (center.z > -100)
+	//		ligthIndex = light.updateLight(ligthIndex, center2.toArray(array));
+		glPopMatrix();
 	}
+
+	glPopMatrix();
 }
 
 void TunnelSlice::move(float dx, float dy, float dz)
@@ -168,7 +191,7 @@ Point TunnelSlice::getFrontCenter()
 {
 	return center1;
 }
- 
+
 Point TunnelSlice::getBackCenter()
 {
 	return center2;
@@ -176,7 +199,11 @@ Point TunnelSlice::getBackCenter()
 
 void TunnelSlice::setFaceColor(int face, float color[])
 {
-	memcpy(this->color[face], color, 3 * sizeof(float));
+	if (!colorSet[face])
+	{
+		memcpy(this->color[face], color, 3 * sizeof(float));
+		colorSet[face] = true;
+	}
 }
 
 int TunnelSlice::getSliceIndex()
@@ -194,6 +221,11 @@ void TunnelSlice::setSpeed(Point s)
 	this->speed = s;
 }
 
+void TunnelSlice::setIsWithObstacle(bool isWith)
+{
+	this->isWithObstacle = isWith;
+}
+
 Point TunnelSlice::getSpeed()
 {
 	return speed;
@@ -203,7 +235,11 @@ void TunnelSlice::randomAnObstacle(const Point& sliceCenter1, const Point& slice
 {
 	Point dir = sliceCenter2 - sliceCenter1;
 	ObstacleType type = (ObstacleType)(0);
-	int face = 9;
+	
+	srand(time(0));
+	face = rand() % FACENUM;
+	int colorIndex = rand() % 6;
+	ObstacleColor = OBSTACLECOLOR[colorIndex];
 
 	switch (type)
 	{
@@ -218,9 +254,25 @@ void TunnelSlice::randomAnObstacle(const Point& sliceCenter1, const Point& slice
 		center.z -= PATHWIDTH / 2;
 		center.y = center.y - PATHHEIGHT / 2 + PATHWIDTH / 2;
 		obs = new Cube(center, normal, angle, PATHWIDTH);
+		obs->setColor(ObstacleColor);
 		break;
 	}
 	default:
 		break;
 	}
+}
+
+bool TunnelSlice::getIsWithObstacle()
+{
+	return isWithObstacle;
+}
+
+int TunnelSlice::getFace()
+{
+	return face;
+}
+
+float* TunnelSlice::getObstacleColor()
+{
+	return ObstacleColor;
 }

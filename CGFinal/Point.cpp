@@ -49,9 +49,11 @@ float intersecAngle(const Point& lhs, const Point& rhs)
 	return acos(dotProduct(lhs, rhs) / lhs.length() / rhs.length());
 }
 
-float* Point::toArray()
+float* Point::toArray(float* array)
 {
-	float array[] = { x, y, z };
+	array[0] = x;
+	array[1] = y;
+	array[2] = z;
 
 	return array;
 }

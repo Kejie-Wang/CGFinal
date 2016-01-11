@@ -9,7 +9,7 @@ public:
 	virtual ~Point();
 	Point(float x, float y, float z);
 	float length() const;
-	float* toArray();
+	float* toArray(float* array);
 	friend Point operator+(const Point& lhs, const Point& rhs);
 	friend Point operator-(const Point& lhs, const Point& rhs);
 	friend Point operator*(const float& lhs, const Point& rhs);

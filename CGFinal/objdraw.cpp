@@ -10,114 +10,6 @@ GLfloat ax = 0, ay = 0, az = 0;
 GLint mx = 0, my = 0;
 GLint MouseDown = 0;
 GLfloat aspect = 1;
-void myIdle()
-{
-	Sleep(10);
-	glutPostRedisplay();
-}
-
-void myReshap1e(int width, int height)
-{
-	aspect = (float)width / (height ? height : 1);
-	glViewport(0, 0, width, height);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(75, aspect, 1, 10000);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	gluLookAt(0, 0, 10, 0, 0, 0, 0, 1, 0);
-}
-
-void setLight()
-{
-	static const GLfloat light_position[] = { 50.0f, 50.0f, 50.0f, 0.0f };
-	static const GLfloat light_ambient[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	static const GLfloat light_diffuse[] = { 1.0f, 0.9f, 0.9f, 0.0f };
-	static const GLfloat light_specular[] = { 1.0f, 1.0f, 1.0f, 0.0f };
-	static const GLfloat light_direction[] = { -1.0f, -1.0f, -1.0f };
-
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
-	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, light_direction);
-	glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 10.0f);
-	glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 120.0f);
-
-	glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_DEPTH_TEST);
-}
-
-void tank::setMaterial(Material &mat)
-{
-	glMaterialfv(GL_FRONT, GL_AMBIENT, mat.ambient);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat.diffuse);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, mat.specular);
-	glMaterialfv(GL_FRONT, GL_EMISSION, mat.emission);
-	glMaterialf(GL_FRONT, GL_SHININESS, 100);
-}
-
-void tank::drawtank()
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glPushMatrix();
-	glTranslatef(dx, dy - 20, dz - 100);
-	glRotatef(ax, 1.0f, 0.0f, 0.0f);
-	glRotatef(ay, 0.0f, 1.0f, 0.0f);
-	//glScalef(0.2,0.2,0.2);
-	for (set<string>::iterator it = objname.begin(); it != objname.end(); ++it)
-	{
-		Object temp = objmap[*it];
-		setMaterial(matname[temp.material]);
-		glBindTexture(GL_TEXTURE_2D, matname[temp.material].map);
-		if (temp.row == 3) glBegin(GL_TRIANGLES);
-		else glBegin(GL_QUADS);
-		vector<int>::iterator iter = temp.faces.begin();
-		if (temp.col == 1)
-		{
-			while (iter != temp.faces.end())
-			{
-				glVertex3f(temp.vertexs[*iter - 1].x, temp.vertexs[*iter - 1].y, temp.vertexs[*iter - 1].z);
-				++iter;
-			}
-		}
-		else if (temp.col == 2)
-		{
-			while (iter != temp.faces.end())
-			{
-				glTexCoord2f(temp.texcoords[*(iter + 1) - 1].first, temp.texcoords[*(iter + 1) - 1].second);
-				glVertex3f(temp.vertexs[*iter - 1].x, temp.vertexs[*iter - 1].y, temp.vertexs[*iter - 1].z);
-				iter += 2;
-			}
-		}
-		else if (temp.col == 3 && !temp.texcoords.empty())
-		{
-			while (iter != temp.faces.end())
-			{
-				glNormal3f(temp.normals[*(iter + 2) - 1].x, temp.normals[*(iter + 2) - 1].y, temp.normals[*(iter + 2) - 1].z);
-				glTexCoord2f(temp.texcoords[*(iter + 1) - 1].first, temp.texcoords[*(iter + 1) - 1].second);
-				glVertex3f(temp.vertexs[*iter - 1].x, temp.vertexs[*iter - 1].y, temp.vertexs[*iter - 1].z);
-				iter += 3;
-			}
-		}
-		else
-		{
-			while (iter != temp.faces.end())
-			{
-				glNormal3f(temp.normals[*(iter + 2) - 1].x, temp.normals[*(iter + 2) - 1].y, temp.normals[*(iter + 2) - 1].z);
-				glVertex3f(temp.vertexs[*iter - 1].x, temp.vertexs[*iter - 1].y, temp.vertexs[*iter - 1].z);
-				iter += 3;
-			}
-		}
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glEnd();
-	}
-	glPopMatrix();
-	glutSwapBuffers();
-}
-
 
 GLuint load_texture(const char *file_name)
 {
@@ -417,15 +309,76 @@ void ReadObj(string &cd, string file, map<string, Object> &m, set<string> &n, ma
 }
 
 
+
+void tank::setMaterial(Material &mat)
+{
+	glMaterialfv(GL_FRONT, GL_AMBIENT, mat.ambient);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat.diffuse);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat.specular);
+	glMaterialfv(GL_FRONT, GL_EMISSION, mat.emission);
+	glMaterialf(GL_FRONT, GL_SHININESS, 100);
+}
+
+void tank::drawtank()
+{
+	glPushMatrix();
+	glTranslatef(dx, dy-8, dz-10);
+	glRotatef(ax, 1.0f, 0.0f, 0.0f);
+	glRotatef(ay, 0.0f, 1.0f, 0.0f);
+	glScalef(0.07,0.07,0.07);
+	for (set<string>::iterator it = objname.begin(); it != objname.end(); ++it)
+	{
+		Object temp = objmap[*it];
+		setMaterial(matname[temp.material]);
+		glBindTexture(GL_TEXTURE_2D, matname[temp.material].map);
+		if (temp.row == 3) glBegin(GL_TRIANGLES);
+		else glBegin(GL_QUADS);
+		vector<int>::iterator iter = temp.faces.begin();
+		if (temp.col == 1)
+		{
+			while (iter != temp.faces.end())
+			{
+				glVertex3f(temp.vertexs[*iter - 1].x, temp.vertexs[*iter - 1].y, temp.vertexs[*iter - 1].z);
+				++iter;
+			}
+		}
+		else if (temp.col == 2)
+		{
+			while (iter != temp.faces.end())
+			{
+				glTexCoord2f(temp.texcoords[*(iter + 1) - 1].first, temp.texcoords[*(iter + 1) - 1].second);
+				glVertex3f(temp.vertexs[*iter - 1].x, temp.vertexs[*iter - 1].y, temp.vertexs[*iter - 1].z);
+				iter += 2;
+			}
+		}
+		else if (temp.col == 3 && !temp.texcoords.empty())
+		{
+			while (iter != temp.faces.end())
+			{
+				glNormal3f(temp.normals[*(iter + 2) - 1].x, temp.normals[*(iter + 2) - 1].y, temp.normals[*(iter + 2) - 1].z);
+				glTexCoord2f(temp.texcoords[*(iter + 1) - 1].first, temp.texcoords[*(iter + 1) - 1].second);
+				glVertex3f(temp.vertexs[*iter - 1].x, temp.vertexs[*iter - 1].y, temp.vertexs[*iter - 1].z);
+				iter += 3;
+			}
+		}
+		else
+		{
+			while (iter != temp.faces.end())
+			{
+				glNormal3f(temp.normals[*(iter + 2) - 1].x, temp.normals[*(iter + 2) - 1].y, temp.normals[*(iter + 2) - 1].z);
+				glVertex3f(temp.vertexs[*iter - 1].x, temp.vertexs[*iter - 1].y, temp.vertexs[*iter - 1].z);
+				iter += 3;
+			}
+		}
+		glEnd();
+	}
+	glPopMatrix();
+}
+
+
 void init()
 {
 	ReadObj(cd, ".\\tank\\tank.obj", objmap, objname, matname);
-	//glutFullScreen();
-	glClearColor(0.93, 0.94, 0.98, 1.0);
-	glShadeModel(GL_SMOOTH);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_TEXTURE_2D);
-	//setLight();
 }
 
 

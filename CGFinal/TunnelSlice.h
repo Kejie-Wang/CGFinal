@@ -19,11 +19,16 @@ private:
 	float thick;
 	float color[FACENUM][3];
 	int sliceIndex;
+	int face;
+	float *ObstacleColor = nullptr;
+	int ligthIndex;
+	bool isWithObstacle;
+	bool colorSet[FACENUM];
 	Obstacle* obs = nullptr;
 	void randomAnObstacle(const Point& sliceCenter1, const Point& sliceCenter2);
 public:
 	TunnelSlice();
-	TunnelSlice(Point center1, Point center2, float radius = SLICERADIUS, float thick = SLICETHICKNESS);
+	TunnelSlice(Point center1, Point center2, bool isWithObstacle = false);
 	~TunnelSlice();
 	void drawASlice();
 	void move(float dx, float dy, float dz);
@@ -35,6 +40,10 @@ public:
 	int getSliceIndex();
 	void setSpeed(Point s);
 	Point getSpeed();
+	void setIsWithObstacle(bool isWith);
+	bool getIsWithObstacle();
+	int getFace();
+	float* getObstacleColor();
 };
 
 #endif

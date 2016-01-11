@@ -12,8 +12,9 @@
 #include <cstdio>
 #include <set>
 #include <GL\glut.h>
-using namespace std;
 #include <set>
+using namespace std;
+
 
 
 typedef struct
@@ -27,41 +28,41 @@ class Object {
 
 public:
 	typedef std::vector<VERTEX>::iterator viter;
-	typedef std::vector< std::pair<float, float> >::iterator titer;
+	typedef std::vector< std::pair<float,float> >::iterator titer;
 	typedef std::vector<VERTEX>::iterator niter;
 	typedef std::vector<int>::iterator fiter;
-	Object(viter vbeg, viter vend, titer tbeg, titer tend, niter nbeg, niter nend, fiter fbeg, fiter fend, int r, int c, std::string mat)
-		:vertexs(vbeg, vend), texcoords(tbeg, tend), normals(nbeg, nend), faces(fbeg, fend), row(r), col(c), material(mat){}
+	Object(viter vbeg,viter vend,titer tbeg,titer tend,niter nbeg,niter nend,fiter fbeg,fiter fend,int r,int c,std::string mat)
+	:vertexs(vbeg,vend),texcoords(tbeg,tend),normals(nbeg,nend),faces(fbeg,fend),row(r),col(c),material(mat){}
 	Object(){}
 
 	std::vector<VERTEX> vertexs;
-	std::vector< std::pair<float, float> > texcoords;
+	std::vector< std::pair<float,float> > texcoords;
 	std::vector<VERTEX> normals;
 	std::vector<int> faces;
 	std::string material;
-	int row, col;
+	int row,col;
 };
 
 class Material {
 
 public:
-	Material(float *a, float *d, float *s, float *e, unsigned m)
+	Material(float *a,float *d,float *s,float *e,unsigned m)
 	{
 		ambient[0] = *a;
-		ambient[1] = *(a + 1);
-		ambient[2] = *(a + 2);
+		ambient[1] = *(a+1);
+		ambient[2] = *(a+2);
 		ambient[3] = 0;
 		diffuse[0] = *d;
-		diffuse[1] = *(d + 1);
-		diffuse[2] = *(d + 2);
+		diffuse[1] = *(d+1);
+		diffuse[2] = *(d+2);
 		diffuse[3] = 0;
 		specular[0] = *s;
-		specular[1] = *(s + 1);
-		specular[2] = *(s + 2);
+		specular[1] = *(s+1);
+		specular[2] = *(s+2);
 		specular[3] = 0;
 		emission[0] = *e;
-		emission[1] = *(e + 1);
-		emission[2] = *(e + 2);
+		emission[1] = *(e+1);
+		emission[2] = *(e+2);
 		emission[3] = 0;
 		map = m;
 	}
@@ -94,19 +95,18 @@ public:
 
 inline int power_of_two(int n)
 {
-	if (n <= 0) return 0;
-	return (n&(n - 1)) == 0;
+	if(n<=0) return 0;
+	return (n&(n-1))==0;
 }
 
-inline bool startswith(string &a, string &b)
+inline bool startswith(string &a,string &b)
 {
-	if (a.size()<b.size())
+	if(a.size()<b.size())
 	{
 		return false;
 	}
-	return a.substr(0, b.size()) == b;
+	return a.substr(0,b.size())==b;
 }
-void myIdle();
 void init();
 class tank{
 public:
@@ -115,4 +115,5 @@ public:
 
 };
 static GLfloat asp = 1;
+
 #endif

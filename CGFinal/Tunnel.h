@@ -18,11 +18,16 @@ public:
 	~Tunnel();
 	void drawATunnel();
 	Point getDirection();
+	void setAngle(float angle);
 private:
 	std::list<TunnelSlice> tunnel;
-	//std::list<Obstacle*> obstacles;
+	int pastObsDst = -100;
+	int threshold;
 	Path path;
+	float angle;
 	void updateTunnel();
+	bool collisionDetection(TunnelSlice slice);
+
 };
 
 #endif	//_TUNNEL_H_
